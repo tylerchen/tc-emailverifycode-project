@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Verify Code</title>
+    <style type="text/css">
+        label {display:inline-block;width:120px;}
+        input, textarea{width:200px;}
+    </style>
+</head>
+<body>
+<h1>Email Send Verify Code</h1>
+<form action="" method="GET" onsubmit="return send();">
+    <label for="sessionId">Session Id:</label><input id="sessionId" type="text"/><br/>
+    <label for="email">Email:</label><input id="email" type="text"/><br/>
+    <label for="templateId">Template Id:</label><input id="templateId" type="text" value="0"/><br/>
+    <label></label><button type="submit">Send</button>
+</form>
+<label for="ReceiveCode">Receive Code:</label><input id="ReceiveCode" type="text"/><br/>
+<h1>Email Verify Code</h1>
+<form action="" method="GET" onsubmit="return verify();">
+    <label for="verifySessionId">Session Id:</label><input id="verifySessionId" type="text"/><br/>
+    <label for="verifyCode">Verify Code:</label><input id="verifyCode" type="text"/><br/>
+    <label></label><button type="submit">Verify</button>
+</form>
+<label for="VerifyResult">VerifyResult:</label><input id="VerifyResult" type="text" readonly/><br/>
+<h1>Email password encrypt</h1>
+<form action="" method="GET" onsubmit="return encrypt();">
+    <label for="password">Email Password:</label><input id="password" type="text"/><br/>
+    <label></label><button type="submit">Encrypt</button>
+</form>
+<label for="EncryptPassword">Encrypt Password:</label><textarea id="EncryptPassword" cols="60" rows="2"></textarea><br/>
+<script>
+function send(){
+    var sessionId = document.getElementById('sessionId').value;
+    var email = document.getElementById('email').value;
+    var templateId = document.getElementById('templateId').value||'0';
+    var url ='/evc/send/'+sessionId+'/'+email+'/'+templateId;
+    sendGet(url);
+    return false;
+}
+function sendGet(url){
+    var ajax = ajaxObject();
+    ajax.open("GET",url,true);//open(方法、文件名、异步传输）
+    ajax.send();
+    ajax.onreadystatechange=function(){
+    //readyState: 浏览器和服务器，进行到哪一步了, 0->（未初始化）：还没有调用 open() 方法。1->（载入）：已调用 send() 方法，正在发送请求。2->载入完成）：send() 方法完成，已收到全部响应内容。3->（解析）：正在解析响应内容。4->（完成）：响应内容解析完成，可以在客户端调用。
+        if(ajax.readyState==4){
+            if(ajax.status==200){//判断是否成功,如果是200，就代表成功
+                document.getElementById('ReceiveCode').value = ajax.responseText;
+            }else{
+                document.getElementById('ReceiveCode').value = 'ERROR';
+            }
+        }
+    };
+}
+///
+function verify(){
+    var sessionId = document.getElementById('sessionId').value;
+    var verifyCode = document.getElementById('verifyCode').value;
+    var url ='/evc/verify/'+sessionId+'/'+verifyCode;
+    verifyGet(url);
+    return false;
+}
+function verifyGet(url){
+    var ajax = ajaxObject();
+    ajax.open("GET",url,true);//open(方法、文件名、异步传输）
+    ajax.send();
+    ajax.onreadystatechange=function(){
+    //readyState: 浏览器和服务器，进行到哪一步了, 0->（未初始化）：还没有调用 open() 方法。1->（载入）：已调用 send() 方法，正在发送请求。2->载入完成）：send() 方法完成，已收到全部响应内容。3->（解析）：正在解析响应内容。4->（完成）：响应内容解析完成，可以在客户端调用。
+        if(ajax.readyState==4){
+            if(ajax.status==200){//判断是否成功,如果是200，就代表成功
+                document.getElementById('VerifyResult').value = ajax.responseText;
+            }else{
+                document.getElementById('VerifyResult').value = 'ERROR';
+            }
+        }
+    };
+}
+///
+function encrypt(){
+    var password = document.getElementById('password').value;
+    var url ='/encrypt/'+password;
+    encryptGet(url);
+    return false;
+}
+function encryptGet(url){
+    var ajax = ajaxObject();
+    ajax.open("GET",url,true);//open(方法、文件名、异步传输）
+    ajax.send();
+    ajax.onreadystatechange=function(){
+    //readyState: 浏览器和服务器，进行到哪一步了, 0->（未初始化）：还没有调用 open() 方法。1->（载入）：已调用 send() 方法，正在发送请求。2->载入完成）：send() 方法完成，已收到全部响应内容。3->（解析）：正在解析响应内容。4->（完成）：响应内容解析完成，可以在客户端调用。
+        if(ajax.readyState==4){
+            if(ajax.status==200){//判断是否成功,如果是200，就代表成功
+                document.getElementById('EncryptPassword').value = ajax.responseText;
+            }else{
+                document.getElementById('EncryptPassword').value = 'ERROR';
+            }
+        }
+    };
+}
+///
+function ajaxObject(){
+    if(window.XMLHttpRequest){//如果有XMLHttpRequest，那就是非IE6浏览器。()里面加window的原因下面会有描述。
+        return oAjax = new XMLHttpRequest();//创建ajax对象
+    }else{//如果没有XMLHttpRequest，那就是IE6浏览器
+        return oAjax = new ActiveXObject("Microsoft.XMLHTTP");//IE6浏览器创建ajax对象
+    }
+}
+</script>
+</body>
+</html>
